@@ -1,0 +1,31 @@
+from utilities import *
+import pickle as pk
+
+
+def create_map():
+    #Function to open the map and store the content in it
+    with open("map.txt") as Map: #name the file and close 
+        #check if the txt is readble
+        if Map.readable() is False:
+            return "map not readable"
+        
+        #vertexs
+        aux=(Map.readlines(1))
+        aux=aux[0][2:]#cut the string
+        verts=eval(aux)#convert string to list
+
+        #edges
+        aux=(Map.readlines(2))
+        aux=aux[0][2:]#cut the string and replace the <>
+        aux=aux.replace('>',')')
+        aux=aux.replace('<','(')
+        edges=eval(aux)#convert string to list
+
+    #create the map
+    return createDirected_G_Mat_with_edges(verts,edges)
+
+#create the map using matrix representation
+Map=create_map()
+printMat(Map)
+print("map created successfully")
+
