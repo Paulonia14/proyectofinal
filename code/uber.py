@@ -37,6 +37,8 @@ try:
         print("work in progress")
     elif Largs[1]=="-close":
         print("have a nice day :)")
+    else:
+        print("you typed it wrong try again")
 except:
     print("try again something is wrong") 
         
