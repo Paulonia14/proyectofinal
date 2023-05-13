@@ -25,6 +25,7 @@ def create_map():
     #create the map
     return createDirected_G_Mat_with_edges(verts,edges)
 
+
 #crate a list with the args
 Largs=sys.argv
 
@@ -37,7 +38,16 @@ try:
             pk.dump(Map,Matfile)
         print("map created successfully")
     elif Largs[1]=="-load_fix_element":
-        print("work in progress")
+        print("Work in progress")
+    elif Largs[1]=="-load_movil_element":
+        print("Work in progress")
+    elif Largs[1]=="-create_trip":
+        try:
+            with open("serialized_matrix.pickle","rb") as Matfile:
+                mapMatrix=pk.load(Matfile)
+                printMat(mapMatrix)
+        except:
+            print("Map not defined")
     elif Largs[1]=="-close":
         print("have a nice day :)")
     else:
@@ -45,4 +55,3 @@ try:
 except:
     print("something is wrong, try again") 
         
-

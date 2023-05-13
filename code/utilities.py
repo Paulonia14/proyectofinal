@@ -7,7 +7,6 @@ def printMat(mat):
 def createDirected_G_Mat_with_edges(vertices, aristas):
     # Create an adjacency matrix but WITH borders (Directed Graph)
     # I add the borders
-    # Create the adjacency matrix but WITHOUT the borders ??
     vertices.sort()
     n = len(vertices)
     # Create adjacency matrix initialized with zeros
