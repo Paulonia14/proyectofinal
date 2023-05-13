@@ -1,18 +1,18 @@
 
 def printMat(mat):
-    #imprime una matriz hecha con listas que SI tiene los bordes
+    #print matrix created with lists that has borders (each vertex in the borders)
     for each in mat:
         print(each)
 
 def createDirected_G_Mat_with_edges(vertices, aristas):
-    #crea la matriz de adyacencia pero CON los bordes (Grafo Dirijido)
-    #agrego los bordes
-    #crea la matriz de adyacencia pero SIN los bordes
+    # Create an adjacency matrix but WITH borders (Directed Graph)
+    # I add the borders
+    # Create the adjacency matrix but WITHOUT the borders ??
     vertices.sort()
     n = len(vertices)
-    # crear matriz de adyacencia inicializada con ceros
+    # Create adjacency matrix initialized with zeros
     matriz = [[0] * n for x in range(n)]
-    # llenar matriz con unos donde haya aristas
+    # Fill matrix with "ones" when there is an edge
     for u, v,weight in aristas:
         i = vertices.index(u)
         j = vertices.index(v)

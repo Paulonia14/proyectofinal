@@ -5,7 +5,7 @@ import pickle as pk
 
 def create_map():
     #Function to open the map and store the content in it
-    with open("map.txt") as Map: #name the file and close 
+    with open("map.txt","r") as Map: #name the file and close 
         #check if the txt is readble
         if Map.readable() is False:
             return "map not readable"
@@ -32,14 +32,17 @@ try:
     if Largs[1]=="-create_map": #create the map using matrix representation
         Map=create_map()
         printMat(Map)
+        #Serialize the map matrix and store it in a file using pickle
+        with open("serialized_matrix.pickle","wb") as Matfile:
+            pk.dump(Map,Matfile)
         print("map created successfully")
     elif Largs[1]=="-load_fix_element":
         print("work in progress")
     elif Largs[1]=="-close":
         print("have a nice day :)")
     else:
-        print("you typed it wrong try again")
+        print("you typed it wrong, try again")
 except:
-    print("try again something is wrong") 
+    print("something is wrong, try again") 
         
 
