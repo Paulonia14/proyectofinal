@@ -1,4 +1,5 @@
 from utilities import *
+import sys
 import pickle as pk
 
 
@@ -24,8 +25,19 @@ def create_map():
     #create the map
     return createDirected_G_Mat_with_edges(verts,edges)
 
-#create the map using matrix representation
-Map=create_map()
-printMat(Map)
-print("map created successfully")
+#crate a list with the args
+Largs=sys.argv
+
+try:
+    if Largs[1]=="-create_map": #create the map using matrix representation
+        Map=create_map()
+        printMat(Map)
+        print("map created successfully")
+    elif Largs[1]=="-load_fix_element":
+        print("work in progress")
+    elif Largs[1]=="-close":
+        print("have a nice day :)")
+except:
+    print("try again something is wrong") 
+        
 
