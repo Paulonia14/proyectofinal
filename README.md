@@ -12,7 +12,7 @@
 + Desarrollar una aplicación para implementar la movilidad de personas como un servicio.
 + Desarrollar mecanismos eficientes para encontrar las mejores rutas dentro de un mapa.
 
-utilizando las estructuras vistas en clase y utilizando Python
+Utilizando las estructuras vistas en clase y utilizando Python
 
 # Integrantes
 
