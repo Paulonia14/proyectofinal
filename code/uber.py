@@ -54,7 +54,8 @@ try:
                 print("Do you want to change it? 1-Yes 0-No")
                 choice=input()
                 if choice=="1":
-                    F_elements[Largs[2]]==Largs[2]
+                    F_elements[Largs[2]]= Largs[2]
+                    #Or F_elements[Largs[2]]=Largs[2] ??
                 elif choice=="0":
                     print("oki doki")
                 else:
@@ -80,6 +81,7 @@ try:
                     people=pk.load(peopleFile)
             except:
                 people={} #if the file is empty it will create a dictionary
+            print(people)
             with open("people.pickle","wb") as peopleFile:
                 #convert direction to a list-tuple
                 aux=Largs[3]
@@ -93,12 +95,13 @@ try:
                     print("Do you want to change it? 1-Yes 0-No")
                     choice=input()
                     if choice=="1":
-                        people[Largs[2]]==Largs[2]
+                        people[Largs[2]]= Largs[2]
+
                     elif choice=="0":
                         print("oki doki")
                     else:
                         print("Not valid")
-                        raise # error
+                        raise ValueError # error
                 else:
                     #append new person to dictionary
                     people[Largs[2]] = aux
@@ -125,7 +128,7 @@ try:
                     print("Do you want to change it? 1-Yes 0-No")
                     choice=input()
                     if choice=="1":
-                        cars[Largs[2]]==Largs[2]
+                        cars[Largs[2]]= Largs[2]
                     elif choice=="0":
                         print("oki doki")
                     else:
