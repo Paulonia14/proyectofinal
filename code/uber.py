@@ -29,11 +29,7 @@ def create_map():
 #crate a list with the args
 Largs=sys.argv
 
-try:
-    with open("FE.pickle","rb") as FE_file:
-       F_elements=pk.load(FE_file)
-except:
-    F_elements={}
+
 
 
 
@@ -46,34 +42,102 @@ try:
             pk.dump(Map,Matfile)
         print("map created successfully")
     elif Largs[1]=="-load_fix_element":
+        try: 
+            with open("FE.pickle","rb") as FE_file:
+               F_elements=pk.load(FE_file)
+        except:
+            F_elements={} #if the file is empty it will create a dictionary
         with open("FE.pickle","wb") as FE_file:
-            #verify alredy exits
+            #verify if it already exits
             if Largs[2] in F_elements:
-                print("El elemento ya se encuentra cargado")
-                print("desea cambiarlo? 1-Si 0-No")
-                Desc=input()
-                if Desc=="1":
+                print("The element is already loaded")
+                print("Do you want to change it? 1-Yes 0-No")
+                choice=input()
+                if choice=="1":
                     F_elements[Largs[2]]==Largs[2]
-                elif Desc=="0":
+                elif choice=="0":
                     print("oki doki")
                 else:
                     print("Not valid")
                     raise # error
             else:
-                #convert to a list-tuple
+                #convert direction to a list-tuple
                 aux=Largs[3]
                 aux="["+ aux + "]"
                 aux=aux.replace('e','')
                 aux=eval(aux)
-                #append to diccionary
+                #append new element to dictionary
                 F_elements[Largs[2]] = aux
-                pk.dump(F_elements,FE_file)#save the structure
+                pk.dump(F_elements,FE_file) #save the structure
                 print("element created successfully")
                 print(F_elements)
 
 
     elif Largs[1]=="-load_movil_element":
-        print("Work in progress")
+        if Largs[2][0]=="P": #People
+            try:
+                with open("people.pickle","rb") as peopleFile:
+                    people=pk.load(peopleFile)
+            except:
+                people={} #if the file is empty it will create a dictionary
+            with open("people.pickle","wb") as peopleFile:
+                #convert direction to a list-tuple
+                aux=Largs[3]
+                aux="["+ aux + "]"
+                aux=aux.replace('e','')
+                aux=eval(aux)
+                print(aux)
+                #Verify if it already exists
+                if Largs[2] in people:
+                    print("The element is already loaded")
+                    print("Do you want to change it? 1-Yes 0-No")
+                    choice=input()
+                    if choice=="1":
+                        people[Largs[2]]==Largs[2]
+                    elif choice=="0":
+                        print("oki doki")
+                    else:
+                        print("Not valid")
+                        raise # error
+                else:
+                    #append new person to dictionary
+                    people[Largs[2]] = aux
+                    pk.dump(people,peopleFile) #save the structure
+                    print("person placed successfully")
+                    print(people)
+
+        if Largs[2][0]=="C": #Cars
+            try:
+                with open("cars.pickle","rb") as carsFile:
+                    cars=pk.load(carsFile)
+            except:
+                cars={} #if the file is empty it will create a dictionary
+            with open("cars.pickle","wb") as carsFile:
+                #convert direction to a list-tuple
+                aux=Largs[3]
+                aux="["+ aux + "]"
+                aux=aux.replace('e','')
+                aux=eval(aux)
+                print(aux)
+                #Verify if it already exists
+                if Largs[2] in cars:
+                    print("The element is already loaded")
+                    print("Do you want to change it? 1-Yes 0-No")
+                    choice=input()
+                    if choice=="1":
+                        cars[Largs[2]]==Largs[2]
+                    elif choice=="0":
+                        print("oki doki")
+                    else:
+                        print("Not valid")
+                        raise # error
+                else:
+                    #append new car to dictionary
+                    cars[Largs[2]] = aux
+                    pk.dump(cars,carsFile) #save the structure
+                    print("car created successfully")
+                    print(cars)
+
     elif Largs[1]=="-create_trip":
         try:
             with open("serialized_matrix.pickle","rb") as Matfile:
@@ -86,5 +150,5 @@ try:
     else:
         print("you typed it wrong, try again")
 except:
-    print("something is wrong, try again") 
+    print("something is wrong :( , try again") 
         
