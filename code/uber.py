@@ -4,7 +4,6 @@ import pickle as pk
 
 
 def create_map(file):
-    print(file)
     #Function to open the map and store the content in it
     with open(file,"r") as Map: #name the file and close 
         #check if the txt is readble
@@ -30,21 +29,37 @@ def create_map(file):
 Largs=sys.argv
 
 
+"""CreateMAP"""
+
 try:
     if Largs[1]=="-create_map": #create the map using matrix representation
         #store path
         file=" ".join(Largs[2:])
         Map=create_map(file)
-        #printMat(Map)
         #Serialize the map matrix and store it in a file using pickle
         with open("serialized_matrix.pickle","wb") as Matfile:
             pk.dump(Map,Matfile)
-        printMat(Map)
+
+        #calculamos de entarda las distancias para no hacerlo mas tarde
+        Distances=Map #the table
+        #usando programacion dinamica calculamos la dist mas corta a cada par de vertices
+        Distances=Initial_Mat_for_FloydW(Distances)
+        Distances=floyd_warshall(Distances)
+
+        printMat(Distances)
+
+        with open("serialized_Distances.pickle","wb") as Dfile:
+            pk.dump(Distances,Dfile)
+
         print("map created successfully")
+        
+except:
+    print("something is wrong in -create_map :( , try again")
 
-        #falta el chanchuyo
+"""CreateELEMENTS"""
 
-    elif Largs[1]=="-load_fix_element":
+try:
+    if Largs[1]=="-load_fix_element":
         print(Largs[3])
         #validar!
         validateAdress(Largs[3])
@@ -144,18 +159,27 @@ try:
                 pk.dump(cars,carsFile) #Save the changes in the file
                 print("car created successfully")
                 print(cars)
+except:
+    print("something is wrong in the creation :( , try again") 
 
-    elif Largs[1]=="-create_trip":
+"""CreateTRIP"""  
+
+try:
+    if Largs[1]=="-create_trip":
         try:
             with open("serialized_matrix.pickle","rb") as Matfile:
                 mapMatrix=pk.load(Matfile)
                 printMat(mapMatrix)
         except:
             print("Map not defined")
-    elif Largs[1]=="-close":
-        print("have a nice day :)")
-    else:
-        print("you typed it wrong, try again")
 except:
     print("something is wrong :( , try again") 
-        
+
+
+"""Close"""
+
+if Largs[1]=="-close":
+    print("have a nice day :)")
+
+if Largs[1] != "-close" and Largs[1] !="-create_trip" and Largs[1] !="-load_fix_element" and Largs[1] !="-load_movil_element" and Largs[1] !="-create_map":
+    print("you typed it wrong, try again")

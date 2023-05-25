@@ -60,3 +60,32 @@ def validateAdress(adress):
         print("The Distance you provided is not equivalent to the distance of the street")
         raise
 
+#pseudo infinite XD
+global INF
+INF=9999999999
+
+
+
+def Initial_Mat_for_FloydW(matriz):
+    #Prepara la Tabla para el algoritmo de FW
+    #quito los bordes (Grafo Dirijido)
+    matriz.pop(0)
+    for each in matriz:
+        each.pop(0)
+    #relleno con infinito y los 0 correspondientes
+    for i in range(0,len(matriz)):
+        for j in range(0,len(matriz)):
+            if matriz[i][j]==0 and i!=j:
+                matriz[i][j]=INF
+    
+    return matriz
+
+
+def floyd_warshall(Mat): #O(V^3) #mat(previamente preparada)
+    #implemento el algoritmo de FW para ver el camino mas corto entre cualquier par de vertices 
+    NumV=len(Mat) #rows
+    for k in range(NumV): #be a new n X n matrix
+        for i in range(NumV):
+            for j in range(NumV):
+                Mat[i][j] = min(Mat[i][j], Mat[i][k] + Mat[k][j]) #ecuacion de recurrencia O(1)
+    return Mat #nueva matriz con los caminos mas cortos (infinito significa que no hay camino)
