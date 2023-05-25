@@ -39,14 +39,15 @@ try:
         #Serialize the map matrix and store it in a file using pickle
         with open("serialized_matrix.pickle","wb") as Matfile:
             pk.dump(Map,Matfile)
+        printMat(Map)
         print("map created successfully")
 
         #falta el chanchuyo
 
     elif Largs[1]=="-load_fix_element":
-
+        print(Largs[3])
         #validar!
-
+        validateAdress(Largs[3])
         try: 
             with open("FE.pickle","rb") as FE_file:
                F_elements=pk.load(FE_file)
@@ -79,9 +80,7 @@ try:
             print(F_elements)
 
     elif Largs[1]=="-load_movil_element":
-
-        #validar!
-
+        validateAdress(Largs[3])
         if Largs[2][0]=="P" or Largs[2][0]=="p": #People
             try:
                 with open("people.pickle","rb") as peopleFile:
@@ -100,15 +99,15 @@ try:
                 print("Do you want to change it? 1-Yes 0-No")
                 choice=input()
                 if choice=="1":
-                    people[Largs[2]]= aux
+                    people[Largs[2]]= aux,Largs[4]
                 elif choice=="0":
                     print("oki doki")
                 else:
                     print("Not valid")
-                    raise ValueError # error
+                    raise # error
             else:
                 #append new person to dictionary
-                people[Largs[2]] = aux
+                people[Largs[2]] = aux,Largs[4]
             with open("people.pickle","wb") as peopleFile:
                 
                 pk.dump(people,peopleFile) #save the changes in the file
@@ -132,7 +131,7 @@ try:
                 print("Do you want to change it? 1-Yes 0-No")
                 choice=input()
                 if choice=="1":
-                    cars[Largs[2]]= aux
+                    cars[Largs[2]]= aux,Largs[4]
                 elif choice=="0":
                     print("oki doki")
                 else:
@@ -140,7 +139,7 @@ try:
                     raise # error
             else:
                 #append new car to dictionary
-                cars[Largs[2]] = aux
+                cars[Largs[2]] = aux,Largs[4]
             with open("cars.pickle","wb") as carsFile:
                 pk.dump(cars,carsFile) #Save the changes in the file
                 print("car created successfully")
