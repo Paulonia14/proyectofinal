@@ -23,3 +23,8 @@ def createDirected_G_Mat_with_edges(vertices, aristas):
         matriz[0].append(each)
  
     return matriz
+
+
+def Validateadress():
+    #
+    pass

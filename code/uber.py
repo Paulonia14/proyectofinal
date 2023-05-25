@@ -3,9 +3,10 @@ import sys
 import pickle as pk
 
 
-def create_map():
+def create_map(file):
+    print(file)
     #Function to open the map and store the content in it
-    with open("map.txt","r") as Map: #name the file and close 
+    with open(file,"r") as Map: #name the file and close 
         #check if the txt is readble
         if Map.readable() is False:
             return "map not readable"
@@ -25,23 +26,27 @@ def create_map():
     #create the map
     return createDirected_G_Mat_with_edges(verts,edges)
 
-
 #crate a list with the args
 Largs=sys.argv
 
 
-
-
-
 try:
     if Largs[1]=="-create_map": #create the map using matrix representation
-        Map=create_map()
+        #store path
+        file=" ".join(Largs[2:])
+        Map=create_map(file)
         #printMat(Map)
         #Serialize the map matrix and store it in a file using pickle
         with open("serialized_matrix.pickle","wb") as Matfile:
             pk.dump(Map,Matfile)
         print("map created successfully")
+
+        #falta el chanchuyo
+
     elif Largs[1]=="-load_fix_element":
+
+        #validar!
+
         try: 
             with open("FE.pickle","rb") as FE_file:
                F_elements=pk.load(FE_file)
@@ -74,6 +79,9 @@ try:
             print(F_elements)
 
     elif Largs[1]=="-load_movil_element":
+
+        #validar!
+
         if Largs[2][0]=="P" or Largs[2][0]=="p": #People
             try:
                 with open("people.pickle","rb") as peopleFile:
