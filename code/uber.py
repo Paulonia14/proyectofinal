@@ -39,10 +39,9 @@ try:
         #Serialize the map matrix and store it in a file using pickle
         with open("serialized_matrix.pickle","wb") as Matfile:
             pk.dump(Map,Matfile)
-
-        #calculamos de entarda las distancias para no hacerlo mas tarde
+        #Calculate the distances so we don't do it later
         Distances=Map #the table
-        #usando programacion dinamica calculamos la dist mas corta a cada par de vertices
+        #Using dynamic programming we calculate the shortest distance for every set of vertex
         Distances=Initial_Mat_for_FloydW(Distances)
         Distances=floyd_warshall(Distances)
 
@@ -60,8 +59,6 @@ except:
 
 try:
     if Largs[1]=="-load_fix_element":
-        print(Largs[3])
-        #validar!
         validateAdress(Largs[3])
         try: 
             with open("FE.pickle","rb") as FE_file:
@@ -95,6 +92,12 @@ try:
             print(F_elements)
 
     elif Largs[1]=="-load_movil_element":
+        #Verify if money is a number
+        try:
+            float(Largs[4])
+        except:
+            print("The third parameter is money, it has to be a number")
+            raise
         validateAdress(Largs[3])
         if Largs[2][0]=="P" or Largs[2][0]=="p": #People
             try:
@@ -169,9 +172,37 @@ try:
         try:
             with open("serialized_matrix.pickle","rb") as Matfile:
                 mapMatrix=pk.load(Matfile)
-                printMat(mapMatrix)
+                #printMat(mapMatrix)
         except:
             print("Map not defined")
+        #Verify if person exists
+        try:
+            with open("people.pickle","rb") as peopleFile:
+                people=pk.load(peopleFile)
+        except:
+            print("You have to create a person first")
+            raise
+        peopleKeys=people.keys()
+        if Largs[2] not in peopleKeys:
+            print("Person doesn't exists")
+            raise
+        #Verify if Largs[2] is element or direction
+        if "," in Largs[3]:
+            #is direction
+            validateAdress(Largs[3])
+        else:
+            #is element
+            try:
+                with open("FE.pickle","rb") as FE_file:
+                    F_elements=pk.load(FE_file)
+            except:
+                print("You don't have any elements")
+                raise
+            #Check if element exists
+            FelementsKeys=F_elements.keys()
+            if Largs[3] not in FelementsKeys:
+                print("That element is not in the map")
+                raise
 except:
     print("something is wrong :( , try again") 
 

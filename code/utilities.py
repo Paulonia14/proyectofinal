@@ -30,9 +30,11 @@ def validateAdress(adress):
     #Validate adress of the element
     adress=adress.strip("''")
     adress=adress.replace('e','')
+    adress=adress.replace('(','')
+    adress=adress.replace(')','')
     adress=adress.split(",")
-    vertex1= adress[0].strip()[1:]
-    vertex2= adress[2].strip()[1:]
+    vertex1= adress[0]
+    vertex2= adress[2]
     try:
         with open("serialized_matrix.pickle","rb") as Matfile:
             mapMatrix=pk.load(Matfile)
@@ -56,7 +58,7 @@ def validateAdress(adress):
         print("Adress is not a street")
         raise
     #add the distances and compare with the distance of the edge
-    if (int(adress[1].strip()[0])) + (int(adress[3].strip()[0]))!= distanceEdge:
+    if (int(adress[1])) + (int(adress[3]))!= distanceEdge:
         print("The Distance you provided is not equivalent to the distance of the street")
         raise
 
