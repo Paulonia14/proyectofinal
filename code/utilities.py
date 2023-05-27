@@ -66,6 +66,12 @@ def validateAdress(adress):
 global INF
 INF=9999999999
 
+def Null_Mat(NumV):
+    #Create a NULL matrix 
+    matriz=[]
+    for i in range(0,NumV):
+        matriz.append([None]*NumV) # dim V X V
+    return matriz
 
 
 def Initial_Mat_for_FloydW(matriz):
@@ -83,11 +89,45 @@ def Initial_Mat_for_FloydW(matriz):
     return matriz
 
 
-def floyd_warshall(Mat): #O(V^3) #mat(previamente preparada)
+def Init_PATHMAT_FloydW(RouteM,Mat):
+    #inicializa la matriz de recorridos para FW
+    NumV=len(RouteM)
+    for i in range(NumV):
+        for j in range(NumV):
+            if Mat[i][j] != INF and i != j: #no tomo ni los que no tiene un camino(inf),ni la diagonal
+                RouteM[i][j] = i  # Inicializar la matriz de recorridos con el vértice intermedio
+            if i==j:
+                RouteM[i][j]=None
+    return RouteM
+
+
+def floyd_warshall(Mat,RouteM): #O(V^3) #mat(previamente preparada) #RouteM(previamente preparada)
     #implemento el algoritmo de FW para ver el camino mas corto entre cualquier par de vertices 
     NumV=len(Mat) #rows
     for k in range(NumV): #be a new n X n matrix
         for i in range(NumV):
             for j in range(NumV):
-                Mat[i][j] = min(Mat[i][j], Mat[i][k] + Mat[k][j]) #ecuacion de recurrencia O(1)
-    return Mat #nueva matriz con los caminos mas cortos (infinito significa que no hay camino)
+                if Mat[i][j] > Mat[i][k] + Mat[k][j]: #ecuacion de recurrencia O(1)
+                    Mat[i][j] = Mat[i][k] + Mat[k][j] 
+                    RouteM[i][j] = RouteM[k][j]  # Act en la matriz de recorridos el vértice intermedio en el camino más corto
+
+    # MAT : nueva matriz con los caminos mas cortos (infinito significa que no hay camino)
+    # RouteM : nueva matriz de recorridos usada mas adelante para reconstruir el camino mas corto (None si no hay camnino)
+    return Mat, RouteM
+
+def Rebuild_Path(RouteM ,start ,end):
+    #reconstruye el camino mas corto dado dos vertices y la matriz de recorridos (previamente calculada)
+
+    if RouteM[start][end] is None: #chequeo si no hay camino entre ellas retorno vacio
+        return None
+    
+    path = [end]
+    while start != end:
+        end = RouteM[start][end] #chequeo el vertice intermedio como start != end significa que hay un vertice en el camino
+        path.append(end)
+    
+    path=path[::-1] #invierto la lista para que empieze desde el inicio-fin
+    return path
+
+
+

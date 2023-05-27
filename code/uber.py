@@ -39,16 +39,30 @@ try:
         #Serialize the map matrix and store it in a file using pickle
         with open("serialized_matrix.pickle","wb") as Matfile:
             pk.dump(Map,Matfile)
+
         #Calculate the distances so we don't do it later
         Distances=Map #the table
+
         #Using dynamic programming we calculate the shortest distance for every set of vertex
+
         Distances=Initial_Mat_for_FloydW(Distances)
-        Distances=floyd_warshall(Distances)
+        #preparo la matriz de recorridos
+        RouteM=Null_Mat(len(Distances)) # mat numv X numv
+        RouteM=Init_PATHMAT_FloydW(RouteM,Distances)
+        
+        #paso final aplicando floyd_warshall en O(V^3) y recibiendo tanto los camninos mas cortos como los recorridos
+        Distances,RouteM=floyd_warshall(Distances,RouteM)
 
-        printMat(Distances)
+        #printMat(Distances)
+        #printMat(RouteM)
 
+
+        #bloque de guardado en memoria dichas matrices
         with open("serialized_Distances.pickle","wb") as Dfile:
             pk.dump(Distances,Dfile)
+
+        with open("serialized_PATHS.pickle","wb") as Pfile:
+            pk.dump(RouteM,Pfile)
 
         print("map created successfully")
         
