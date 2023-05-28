@@ -25,14 +25,22 @@ def createDirected_G_Mat_with_edges(vertices, aristas):
  
     return matriz
 
-
-def validateAdress(adress):
-    #Validate adress of the element
+def convertAdress(adress):
+    #Convert direction to a simplified list for better management
     adress=adress.strip("''")
     adress=adress.replace('e','')
     adress=adress.replace('(','')
     adress=adress.replace(')','')
     adress=adress.split(",")
+    adressResult=[]
+    for each in adress:
+        adressResult.append(int(each))
+    return adressResult
+
+
+def validateAdress(adress):
+    #Validate adress of the element
+    adress=convertAdress(adress)
     vertex1= adress[0]
     vertex2= adress[2]
     try:

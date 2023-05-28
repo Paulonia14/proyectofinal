@@ -81,19 +81,23 @@ try:
                F_elements=pk.load(FE_file)
         except:
             F_elements={} #if the file is empty it will create a dictionary
-
-        #convert direction to a list-tuple
-        aux=Largs[3]
-        aux="["+ aux + "]"
-        aux=aux.replace('e','')
-        aux=eval(aux)
+        #Convert character to uppercase for better management and eliminate '' of parameter
+        try:
+            element=Largs[2]
+            element=element.strip("''")
+            element=element.upper()
+        except:
+            print("element not valid")
+            raise
+        #convert direction to a list
+        direction=convertAdress(Largs[3])
         #verify if it already exits
-        if Largs[2] in F_elements:
+        if element in F_elements:
             print("The element is already loaded")
             print("Do you want to change it? 1-Yes 0-No")
             choice=input()
             if choice=="1":
-                F_elements[Largs[2]]= aux
+                F_elements[element]= direction
             elif choice=="0":
                 print("oki doki")
             else:
@@ -101,7 +105,7 @@ try:
                 raise # error
         else:
             #append new element to dictionary
-            F_elements[Largs[2]] = aux
+            F_elements[element] = direction
         with open("FE.pickle","wb") as FE_file:
             pk.dump(F_elements,FE_file) #Save the changes in the file
             print("element created successfully")
@@ -115,25 +119,30 @@ try:
             print("The third parameter is money, it has to be a number")
             raise
         validateAdress(Largs[3])
-        if Largs[2][0]=="P" or Largs[2][0]=="p": #People
+        #Convert character to uppercase for better management and eliminate '' of parameter
+        try:
+            element=Largs[2]
+            element=element.strip("''")
+            element=element.upper()
+        except:
+            print("element not valid")
+            raise
+        if element[0]=="P": #People
             try:
                 with open("people.pickle","rb") as peopleFile:
                     people=pk.load(peopleFile)
             except:
                 people={} #if the file is empty it will create a dictionary
 
-            #convert direction to a list-tuple
-            aux=Largs[3]
-            aux="["+ aux + "]"
-            aux=aux.replace('e','')
-            aux=eval(aux)
+            #convert direction to a list
+            direction=convertAdress(Largs[3])
             #Verify if it already exists
-            if Largs[2] in people:
+            if element in people:
                 print("The element is already loaded")
                 print("Do you want to change it? 1-Yes 0-No")
                 choice=input()
                 if choice=="1":
-                    people[Largs[2]]= aux,Largs[4]
+                    people[element]= direction,Largs[4]
                 elif choice=="0":
                     print("oki doki")
                 else:
@@ -141,31 +150,28 @@ try:
                     raise # error
             else:
                 #append new person to dictionary
-                people[Largs[2]] = aux,Largs[4]
+                people[element] = direction,Largs[4]
             with open("people.pickle","wb") as peopleFile:
                 
                 pk.dump(people,peopleFile) #save the changes in the file
                 print("person placed successfully")
                 print(people)
 
-        if Largs[2][0]=="C" or Largs[2][0]=="c": #Cars
+        if element[0]=="C": #Cars
             try:
                 with open("cars.pickle","rb") as carsFile:
                     cars=pk.load(carsFile)
             except:
                 cars={} #if the file is empty it will create a dictionary
-            #convert direction to a list-tuple
-            aux=Largs[3]
-            aux="["+ aux + "]"
-            aux=aux.replace('e','')
-            aux=eval(aux)
+            #convert direction to a list
+            direction=convertAdress(Largs[3])
             #Verify if it already exists
-            if Largs[2] in cars:
+            if element in cars:
                 print("The element is already loaded")
                 print("Do you want to change it? 1-Yes 0-No")
                 choice=input()
                 if choice=="1":
-                    cars[Largs[2]]= aux,Largs[4]
+                    cars[element]= direction,Largs[4]
                 elif choice=="0":
                     print("oki doki")
                 else:
@@ -173,7 +179,7 @@ try:
                     raise # error
             else:
                 #append new car to dictionary
-                cars[Largs[2]] = aux,Largs[4]
+                cars[element] = direction,Largs[4]
             with open("cars.pickle","wb") as carsFile:
                 pk.dump(cars,carsFile) #Save the changes in the file
                 print("car created successfully")
@@ -191,6 +197,14 @@ try:
                 #printMat(mapMatrix)
         except:
             print("Map not defined")
+        #Convert person to uppercase for better management and eliminate '' of parameter
+        try:
+            person=Largs[2]
+            person=person.strip("''")
+            person=person.upper()
+        except:
+            print("person not valid")
+            raise
         #Verify if person exists
         try:
             with open("people.pickle","rb") as peopleFile:
@@ -199,15 +213,24 @@ try:
             print("You have to create a person first")
             raise
         peopleKeys=people.keys()
-        if Largs[2] not in peopleKeys:
+        if person not in peopleKeys:
             print("Person doesn't exists")
             raise
-        #Verify if Largs[2] is element or direction
+        #Verify if Largs[3] is element or direction
         if "," in Largs[3]:
             #is direction
             validateAdress(Largs[3])
+            finalDirection=convertAdress(Largs[3])
         else:
             #is element
+            #Convert element to uppercase for better management and eliminate '' of parameter
+            try:
+                element=Largs[3]
+                element=element.strip("''")
+                element=element.upper()
+            except:
+                print("element not valid")
+                raise
             try:
                 with open("FE.pickle","rb") as FE_file:
                     F_elements=pk.load(FE_file)
@@ -216,9 +239,15 @@ try:
                 raise
             #Check if element exists
             FelementsKeys=F_elements.keys()
-            if Largs[3] not in FelementsKeys:
+            if element not in FelementsKeys:
                 print("That element is not in the map")
                 raise
+            finalDirection=F_elements.get(element)
+
+        #Get direction of person
+        personDirection=(people.get(person))[0]
+        
+
 except:
     print("something is wrong :( , try again") 
 
