@@ -55,7 +55,9 @@ try:
 
         #printMat(Distances)
         #printMat(RouteM)
-
+        
+        #position1,position2=vertexToPosition(15,3)
+        #Rebuild_Path(RouteM ,position1 ,position2)
 
         #bloque de guardado en memoria dichas matrices
         with open("serialized_Distances.pickle","wb") as Dfile:

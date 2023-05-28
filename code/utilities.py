@@ -115,7 +115,7 @@ def floyd_warshall(Mat,RouteM): #O(V^3) #mat(previamente preparada) #RouteM(prev
     # RouteM : nueva matriz de recorridos usada mas adelante para reconstruir el camino mas corto (None si no hay camnino)
     return Mat, RouteM
 
-def Rebuild_Path(RouteM ,start ,end):
+def Rebuild_Path(RouteM ,start ,end): #Como parámetro hay que pasarle los vertices-1
     #reconstruye el camino mas corto dado dos vertices y la matriz de recorridos (previamente calculada)
 
     if RouteM[start][end] is None: #chequeo si no hay camino entre ellas retorno vacio
@@ -126,8 +126,24 @@ def Rebuild_Path(RouteM ,start ,end):
         end = RouteM[start][end] #chequeo el vertice intermedio como start != end significa que hay un vertice en el camino
         path.append(end)
     
-    path=path[::-1] #invierto la lista para que empieze desde el inicio-fin
-    return path
+    path=path[::-1] #invierto la lista para que empiece desde el inicio-fin
+    path2=positionsToVertex(path)
+    return path2
 
+def positionsToVertex(ListPositions): 
+    #Change the list of positions to vertex names
+    with open("serialized_matrix.pickle","rb") as Matfile:
+        mapMatrix=pk.load(Matfile)
+    ListVertex=[]
+    for each in ListPositions:
+        ListVertex.append(mapMatrix[0][each+1])#each+1 because first element in mapMatrix[0] is 'V' meaning null
+    return ListVertex
 
+def vertexToPosition(vertex1,vertex2):
+    #change the vertex to the position of the vertex in the map
+    with open("serialized_matrix.pickle","rb") as Matfile:
+        mapMatrix=pk.load(Matfile)
+    position1=(mapMatrix[0].index(vertex1))-1
+    position2=(mapMatrix[0].index(vertex2))-1
+    return position1,position2
 
