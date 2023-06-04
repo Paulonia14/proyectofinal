@@ -155,3 +155,174 @@ def vertexToPosition(vertex1,vertex2):
     position2=(mapMatrix[0].index(vertex2))-1
     return position1,position2
 
+
+def CalculatePrice(path_cost, price): return ((path_cost+price)/4)
+    #calcula el monto a pagar por la persona que pide el auto
+
+
+def Short_Car_Path(DMAT,addressC,personDirection,mapMatrix):
+    #calcula la distancia mas corta para un auto
+    
+    """estan en la misma arista -->>"""
+
+    tuplecar=(addressC[0],addressC[2]) #tomo los valores que interesan para la verif
+    tupleperson=(personDirection[0],personDirection[2])
+
+
+    if (tuplecar[0] in tupleperson) and (tuplecar[1] in tupleperson) : #evaluo si estan tambien el la dir de la persona
+        #misma arista/calle
+        #Nota: nos interesa mucho mas si la calle es de un sentido concreto ya que si es doble mano 
+        #la ubicacion de la persona y el auto no hace muchos problemas
+
+        #determino el sentido de dicha calle/arista ->
+        car2dir,theway=thisIsTheWay(mapMatrix,tuplecar)
+
+        initialvertex=theway[0] #unas referencias para evaluar posiciones intermedias
+
+        for i in range(0,len(personDirection)):
+            if i==0 or i==2:
+                if initialvertex==personDirection[i]:
+                    distPers_to_Ivertx=personDirection[i+1]
+                if initialvertex==addressC[i]:
+                    distCar_to_Ivertx=addressC[i+1]
+
+        #calculo para
+
+        if car2dir==True: #calle dos manos #!!!!!!!!!!!!!!!!
+            #calculo de el recorte de los costados
+            separateDist=distPers_to_Ivertx-distCar_to_Ivertx
+            return abs(separateDist)
+
+        if distPers_to_Ivertx < distCar_to_Ivertx: #el auto NO llega a la persona en la misma arista
+            pos1,pos2=vertexToPosition(theway[0],theway[1])
+            Distfinal=DMAT[pos2][pos1]
+            if Distfinal==INF: #no hay camino posible
+                return None
+            #calculo para los "pedacitos"
+            separateDist=distCar_to_Ivertx-distPers_to_Ivertx
+            Distfinal=Distfinal+((mapMatrix[pos1+1][pos2+1])-separateDist)
+            return Distfinal
+        else:
+            pos1,pos2=vertexToPosition(theway[0],theway[1]) #el auto SI llega a la persona en la misma arista
+
+            #calculo para los "pedacitos"
+            if distPers_to_Ivertx==distCar_to_Ivertx: #autos en la misma posc
+                return 0
+            else:
+                separateDist=distPers_to_Ivertx-distCar_to_Ivertx
+                return separateDist
+
+
+    """NO estan en la misma arista/calle -->>"""
+
+    car2dir,thewayC=thisIsTheWay(mapMatrix,tuplecar)
+    per2dir,thewayP=thisIsTheWay(mapMatrix,tupleperson)
+    
+
+    if per2dir==True and car2dir==True: #caso 1 ambas Doble mano
+        Ld=[]
+        for i in range(0,len(addressC)):
+            if i==0 or i==2:
+                aux=addressC[i+1]
+                for j in range(0,len(personDirection)):
+                    result=0
+                    if j==0 or j==2:
+                        pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
+                        D=DMAT[pos1][pos2]
+                        if D == INF:
+                            Ld.append(INF)
+                        else:
+                            result=aux+D+personDirection[j+1]
+                            Ld.append(result)
+        Ld.sort()
+        if Ld[0]==INF: #no hay camino posible ya que el menor es inf
+            return None
+        else:
+            return Ld[0]
+
+    if per2dir==True and car2dir==False: #caso 2 solo la persona dos manos
+        Ld=[]
+        for i in range(0,len(addressC)):
+            if (i==0 or i==2) and thewayC[1]==addressC[i]:
+                aux=addressC[i+1]
+                for j in range(0,len(personDirection)):
+                    result=0
+                    if j==0 or j==2:
+                        pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
+                        D=DMAT[pos1][pos2]
+                        if D == INF:
+                            Ld.append(INF)
+                        else:
+                            result=aux+D+personDirection[j+1]
+                            Ld.append(result)
+        Ld.sort()
+        if Ld[0]==INF: #no hay camino posible ya que el menor es inf
+            return None
+        else:
+            return Ld[0]
+
+    if per2dir==False and car2dir==True: #caso 3 solo el auto dos manos
+        Ld=[]
+        for i in range(0,len(addressC)):
+            if (i==0 or i==2):
+                aux=addressC[i+1]
+                for j in range(0,len(personDirection)):
+                    result=0
+                    if (j==0 or j==2) and thewayP[0]==personDirection[j]:
+                        pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
+                        D=DMAT[pos1][pos2]
+                        if D == INF:
+                            Ld.append(INF)
+                        else:
+                            result=aux+D+personDirection[j+1]
+                            Ld.append(result)
+        Ld.sort()
+        if Ld[0]==INF: #no hay camino posible ya que el menor es inf
+            return None
+        else:
+            return Ld[0]
+
+    if per2dir==False and car2dir==False: #caso 4 ambas una soloa mano
+        Ld=[]
+        for i in range(0,len(addressC)):
+            if (i==0 or i==2) and thewayC[1]==addressC[i]:
+                aux=addressC[i+1]
+                for j in range(0,len(personDirection)):
+                    result=0
+                    if (j==0 or j==2) and thewayP[0]==personDirection[j]:
+                        pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
+                        D=DMAT[pos1][pos2]
+                        if D == INF:
+                            Ld.append(INF)
+                        else:
+                            result=aux+D+personDirection[j+1]
+                            Ld.append(result)
+        Ld.sort()
+        if Ld[0]==INF: #no hay camino posible ya que el menor es inf
+            return None
+        else:
+            return Ld[0]
+
+
+
+def thisIsTheWay(mapMatrix,tup):
+    #ve el sentido de las calles
+    pos1,pos2=vertexToPosition(tup[0],tup[1])
+
+    onew=False
+    otherw=False
+
+    #este chequeo es necesario ya que las direcciones no necesaramente vienen ordenadas
+    if mapMatrix[pos1+1][pos2+1]!=0: 
+        theway=(tup[0],tup[1])
+        onew=True
+    if mapMatrix[pos2+1][pos1+1]!=0:
+        theway=(tup[1],tup[0])
+        otherw=True
+
+    Tdir=False
+    if onew==True and otherw==True: #calle dos manos 
+        Tdir=True
+
+
+    return Tdir,theway

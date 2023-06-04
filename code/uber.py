@@ -246,7 +246,25 @@ try:
 
         #Get direction of person
         personDirection=(people.get(person))[0]
-        
+
+        try:
+            with open("serialized_Distances.pickle","rb") as Dfile:
+                DistancesMAT=pk.load(Dfile)
+        except:
+            print("not load before something")
+
+        try:
+            with open("cars.pickle","rb") as carsFile:
+                carsHash=pk.load(carsFile)
+        except:
+            print("not load before something")
+
+        #bloque para calcular las distancias a los autos
+        print(personDirection)
+        for car in carsHash:
+            S_dist=Short_Car_Path(DistancesMAT,(carsHash[car][0]),personDirection,mapMatrix)
+            print(car,S_dist,carsHash[car][0])
+
 
 except:
     print("something is wrong :( , try again") 
@@ -259,3 +277,5 @@ if Largs[1]=="-close":
 
 if Largs[1] != "-close" and Largs[1] !="-create_trip" and Largs[1] !="-load_fix_element" and Largs[1] !="-load_movil_element" and Largs[1] !="-create_map":
     print("you typed it wrong, try again")
+
+
