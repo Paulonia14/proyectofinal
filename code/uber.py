@@ -75,12 +75,6 @@ except:
 
 try:
     if Largs[1]=="-load_fix_element":
-        validateAdress(Largs[3])
-        try: 
-            with open("FE.pickle","rb") as FE_file:
-               F_elements=pk.load(FE_file)
-        except:
-            F_elements={} #if the file is empty it will create a dictionary
         #Convert character to uppercase for better management and eliminate '' of parameter
         try:
             element=Largs[2]
@@ -89,20 +83,37 @@ try:
         except:
             print("element not valid")
             raise
+        #Validate element
+        Laux=["H","A","T","S","E","K","I"] #All posible elements
+        if element[0] not in Laux:
+            print("element not valid")
+            raise
+        #Check if is a correct Adress
+        validateAdress(Largs[3])
+        try: 
+            with open("FE.pickle","rb") as FE_file:
+               F_elements=pk.load(FE_file)
+        except:
+            F_elements={} #if the file is empty it will create a dictionary
+
         #convert direction to a list
         direction=convertAdress(Largs[3])
         #verify if it already exits
         if element in F_elements:
-            print("The element is already loaded")
-            print("Do you want to change it? 1-Yes 0-No")
-            choice=input()
-            if choice=="1":
-                F_elements[element]= direction
-            elif choice=="0":
-                print("oki doki")
-            else:
-                print("Not valid")
-                raise # error
+            flag=False
+            while flag==False:
+                print("The element is already loaded")
+                print("Do you want to change it? (Yes/No)")
+                choice=input()
+                choice=choice.upper()
+                if choice=="YES" or choice=="Y" or choice=="SI":
+                    F_elements[element]= direction
+                    flag=True
+                elif choice=="NO" or choice=="N":
+                    flag=True
+                    print("oki doki")
+                else:
+                    print("Option not valid, please try again")
         else:
             #append new element to dictionary
             F_elements[element] = direction
@@ -138,16 +149,18 @@ try:
             direction=convertAdress(Largs[3])
             #Verify if it already exists
             if element in people:
-                print("The element is already loaded")
-                print("Do you want to change it? 1-Yes 0-No")
-                choice=input()
-                if choice=="1":
-                    people[element]= direction,Largs[4]
-                elif choice=="0":
-                    print("oki doki")
-                else:
-                    print("Not valid")
-                    raise # error
+                flag=False
+                while flag==False:
+                    print("The element is already loaded")
+                    print("Do you want to change it? (Yes/No)")
+                    choice=input()
+                    choice=choice.upper()
+                    if choice=="YES" or choice=="Y" or choice=="SI":
+                        people[element]= direction,Largs[4]
+                    elif choice=="NO" or choice=="N":
+                        print("oki doki")
+                    else:
+                        print("Option not valid, please try again")
             else:
                 #append new person to dictionary
                 people[element] = direction,Largs[4]
@@ -157,7 +170,7 @@ try:
                 print("person placed successfully")
                 print(people)
 
-        if element[0]=="C": #Cars
+        elif element[0]=="C": #Cars
             try:
                 with open("cars.pickle","rb") as carsFile:
                     cars=pk.load(carsFile)
@@ -167,16 +180,18 @@ try:
             direction=convertAdress(Largs[3])
             #Verify if it already exists
             if element in cars:
-                print("The element is already loaded")
-                print("Do you want to change it? 1-Yes 0-No")
-                choice=input()
-                if choice=="1":
-                    cars[element]= direction,Largs[4]
-                elif choice=="0":
-                    print("oki doki")
-                else:
-                    print("Not valid")
-                    raise # error
+                flag=False
+                while flag==False: 
+                    print("The element is already loaded")
+                    print("Do you want to change it? (Yes/No)")
+                    choice=input()
+                    choice=choice.upper()
+                    if choice=="YES" or choice=="Y" or choice=="SI":
+                        cars[element]= direction,Largs[4]
+                    elif choice=="NO" or choice=="N":
+                        print("oki doki")
+                    else:
+                        print("Option not valid, please try again")
             else:
                 #append new car to dictionary
                 cars[element] = direction,Largs[4]
@@ -184,6 +199,9 @@ try:
                 pk.dump(cars,carsFile) #Save the changes in the file
                 print("car created successfully")
                 print(cars)
+        else:
+            print("element not valid, it must be 'P' or 'C'")
+            raise
 except:
     print("something is wrong in the creation :( , try again") 
 
@@ -205,6 +223,10 @@ try:
         except:
             print("person not valid")
             raise
+        #Verify if person is a person indeed
+        if person[0]!="P":
+            print("You have to introduce a person to have a trip")
+            raise
         #Verify if person exists
         try:
             with open("people.pickle","rb") as peopleFile:
@@ -221,7 +243,7 @@ try:
             #is direction
             validateAdress(Largs[3])
             finalDirection=convertAdress(Largs[3])
-        else:
+        elif Largs[3][0] in ["H","A","T","S","E","K","I"] or Largs[3][0] in ["h","a","t","s","e","k","i"]:
             #is element
             #Convert element to uppercase for better management and eliminate '' of parameter
             try:
@@ -243,7 +265,10 @@ try:
                 print("That element is not in the map")
                 raise
             finalDirection=F_elements.get(element)
-
+        else:
+            #Not direction nor element
+            print("You have to introduce a direction or a valid building")
+            raise
         #Get direction of person
         personDirection=(people.get(person))[0]
 
@@ -260,10 +285,83 @@ try:
             print("not load before something")
 
         #bloque para calcular las distancias a los autos
-        print(personDirection)
+        #print(personDirection)
+        directionsList=[]
         for car in carsHash:
             S_dist=Short_Car_Path(DistancesMAT,(carsHash[car][0]),personDirection,mapMatrix)
-            print(car,S_dist,carsHash[car][0])
+            #print(car,S_dist,carsHash[car][0])
+            if S_dist!=None:
+                directionsList.append((car,S_dist)) #List with tuples (car name, distance from the car to the person)
+        #print(directionsList)
+        if len(directionsList)>0:
+            directionsList.sort(key=lambda x:x[1]) #Sort the list based on the second element of the tuple (the distances)
+            #print(directionsList)
+            personMoney=float(people[person][1]) #We get the money the person has now
+            #print(personMoney)
+            top3=[]
+            for i in range(0,len(directionsList)):
+                carPrice=carsHash[directionsList[i][0]][1] #We search the price of the car in CarHash (directionsList[i][0] is the car name)
+                price=CalculatePrice(directionsList[i][1], float(carPrice)) #directionsList[i][1] is the distance of the car to the person
+                if price<=personMoney and len(top3)<3: 
+                    top3.append((directionsList[i][0],price))
+        else:
+            print("There are no cars available to make the trip :(")
+            print("We're truly sorry, try it again sometime please!")
+            raise
+
+
+        # PUNTO B !!!!!!!!!!
+
+
+        if len(top3)==0: #Empty list, user can't go anywhere (not enough money)
+            print("You don't have enough money to travel, we're sorry :(")
+            print("Try it again sometime! Have a nice day :D")
+        else:
+            print("These are the cars that can take you to the adress you provided with their respective prices:")
+            print(top3)
+            #Interactive Panel
+            flag=False
+            while flag==False:
+                print("Do you accept the trip? (YES/NO)")
+                choice=input()
+                choice=choice.upper()
+                if choice=="YES" or choice=="Y" or choice=="SI":
+                    flag=True
+                    if len(top3)==1:
+                        choice=1
+                        print("There is only one car available to make the trip")
+                    else:
+                        secondFlag=False
+                        while secondFlag==False:
+                            print("Please select the car you want")
+                            print(top3)
+                            print("To select it you have to choice a number between 1 and ",len(top3))
+                            choice=input()
+                            if int(choice)>0 and int(choice)<=len(top3): #Option must be between those numbers to select a car
+                                secondFlag=True
+                            else:
+                                print("Option not valid, please try again")
+                    choice=int(choice)-1
+                    personMoney=personMoney - float(top3[choice][1]) #Update person money
+                    people[person]=(finalDirection,personMoney) #Move the person to the destination
+                    carMoney=carsHash[top3[choice][0]][1] #Save the money of the car(WE DONT CHANGE IT) to save it with the new direction in a tuple
+                    carsHash[top3[choice][0]]=(finalDirection,carMoney) #Move the car to the destination
+                    #Save the changes in the files of every hash
+                    with open("people.pickle","wb") as peopleFile:
+                        pk.dump(people,peopleFile)
+                    with open("cars.pickle","wb") as carsFile:
+                        pk.dump(carsHash,carsFile)
+
+                    print("Thank you for using Uber!")
+
+                elif choice=="NO" or choice=="N":
+                    flag=True
+                    print("Understandable, is really expensive to travel nowadays, we're unpaid employees")
+                    print("Have a nice day :D (Don't go to cabify or we won't eat please)")
+                else:
+                    print("option not valid, please try again")
+
+
 
 
 except:

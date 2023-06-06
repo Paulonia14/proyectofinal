@@ -156,7 +156,7 @@ def vertexToPosition(vertex1,vertex2):
     return position1,position2
 
 
-def CalculatePrice(path_cost, price): return ((path_cost+price)/4)
+def CalculatePrice(path_cost, carPrice): return ((path_cost+carPrice)/4)
     #calcula el monto a pagar por la persona que pide el auto
 
 
