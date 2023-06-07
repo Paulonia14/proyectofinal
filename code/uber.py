@@ -28,7 +28,6 @@ def create_map(file):
 #crate a list with the args
 Largs=sys.argv
 
-
 """CreateMAP"""
 
 try:
@@ -308,15 +307,33 @@ try:
             print("There are no cars available to make the trip :(")
             print("We're truly sorry, try it again sometime please!")
             raise
-
-
-        # PUNTO B !!!!!!!!!!
-
-
         if len(top3)==0: #Empty list, user can't go anywhere (not enough money)
             print("You don't have enough money to travel, we're sorry :(")
             print("Try it again sometime! Have a nice day :D")
         else:
+            ########################################################
+            #calculo del camino mas corto hacia la direccion e imprimirlo
+            #print(people)
+            #print(F_elements)
+            pathTup=Short_FinalDestination_Path(DistancesMAT,finalDirection,personDirection,mapMatrix)
+            if pathTup==0: #mismo lugar 
+                print("THE SAME PLACE!!!")
+                raise 
+            if pathTup==None: #imposible ir al destino
+                print("IMPOSIBLE TO REACH DESTINATION")
+                raise 
+
+            try:
+                with open("serialized_PATHS.pickle","rb") as Pfile:
+                    RouteM=pk.load(Pfile)
+            except:
+                print("not load before something")
+
+            Path_to_destination=Rebuild_Path(RouteM ,pathTup[0] ,pathTup[1])
+            print("The shortest path to the adress you provided is --->>>")
+            print(Path_to_destination)
+
+            ########################################################
             print("These are the cars that can take you to the adress you provided with their respective prices:")
             print(top3)
             #Interactive Panel
@@ -369,6 +386,7 @@ except:
 
 
 """Close"""
+
 
 if Largs[1]=="-close":
     print("have a nice day :)")

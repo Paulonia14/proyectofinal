@@ -123,7 +123,7 @@ def floyd_warshall(Mat,RouteM): #O(V^3) #mat(previamente preparada) #RouteM(prev
     # RouteM : nueva matriz de recorridos usada mas adelante para reconstruir el camino mas corto (None si no hay camnino)
     return Mat, RouteM
 
-def Rebuild_Path(RouteM ,start ,end): #Como parámetro hay que pasarle los vertices-1
+def Rebuild_Path(RouteM ,start ,end): #Como parámetro hay que pasarle las posc de los vertices
     #reconstruye el camino mas corto dado dos vertices y la matriz de recorridos (previamente calculada)
 
     if RouteM[start][end] is None: #chequeo si no hay camino entre ellas retorno vacio
@@ -326,3 +326,109 @@ def thisIsTheWay(mapMatrix,tup):
 
 
     return Tdir,theway
+
+
+def Short_FinalDestination_Path(DMAT,finalD,InitialD,mapMatrix):
+    #retorna el par de vertices de la distancia mas corta hacia la direccion final
+
+    """estan en la misma arista -->>"""
+    tupleIn=(InitialD[0],InitialD[2]) #tomo los valores que interesan para la verif
+    tupleFin=(finalD[0],finalD[2])
+    if (tupleIn[0] in tupleFin) and (tupleIn[1] in tupleFin):
+        per2dir,theway=thisIsTheWay(mapMatrix,tupleIn)
+
+        initialvertex=theway[0] #unas referencias para evaluar posiciones intermedias
+
+        for i in range(0,len(finalD)):
+            if i==0 or i==2:
+                if initialvertex==finalD[i]:
+                    distDir_to_Ivertx=finalD[i+1]
+                if initialvertex==InitialD[i]:
+                    distPers_to_Ivertx=InitialD[i+1]
+
+        #calculo para
+
+        if per2dir==True: #calle dos manos 
+            tw1,tw2=vertexToPosition(theway[0],theway[1])
+            t=(tw1,tw2)
+            return t
+
+        if distPers_to_Ivertx > distDir_to_Ivertx: #la persona NO llega a la direccion en la misma arista
+            tw1,tw2=vertexToPosition(theway[0],theway[1])
+            t=(tw2,tw1)
+            return t
+        else:  #la persona Si llega a la direccion en la misma arista
+            if distPers_to_Ivertx==distDir_to_Ivertx:
+                return 0
+            else:
+                tw1,tw2=vertexToPosition(theway[0],theway[1])
+                t=(tw1,tw2)
+                return t
+
+    """NO estan en la misma arista/calle -->>"""
+
+    In2dir,thewayIn=thisIsTheWay(mapMatrix,tupleIn)
+    Fin2dir,thewayFin=thisIsTheWay(mapMatrix,tupleFin)
+    
+
+    if In2dir==True and Fin2dir==True: #caso 1 ambas Doble mano
+        Ld=[]
+        hashtemp={}
+        pp1,pp2=vertexToPosition(thewayIn[0],thewayIn[1])
+        pf1,pf2=vertexToPosition(thewayFin[0],thewayFin[1])
+        D1=DMAT[pp1][pf1]
+        hashtemp[D1].append((pp1,pf1))
+        D2=DMAT[pp1][pf2]
+        hashtemp[D2].append((pp1,pf2))
+        D3=DMAT[pp2][pf1]
+        hashtemp[D3].append((pp2,pf1))
+        D4=DMAT[pp2][pf2]
+        hashtemp[D4].append((pp2,pf2))
+        Ld=hashtemp.keys()
+        Ld.sort()
+        if Ld[0]==INF: #no hay camino posible ya que el menor es inf
+            return None
+        else:
+            return hashtemp[Ld[0]]
+
+    if In2dir==True and Fin2dir==False: #caso 2 solo el inicio dos manos
+        pp1,pp2=vertexToPosition(thewayIn[0],thewayIn[1])
+        pf1,pf2=vertexToPosition(thewayFin[0],thewayFin[1])
+        D1=DMAT[pp1][pf1]
+        D2=DMAT[pp2][pf1]
+
+        if D1==INF and D2==INF:
+            return None
+        if D1<D2:
+            t=(pp1,pf1)
+            return t
+        else:
+            t=(pp2,pf1)
+            return t
+
+    if In2dir==False and Fin2dir==True: #caso 3 solo el destino dos manos
+        pp1,pp2=vertexToPosition(thewayIn[0],thewayIn[1])
+        pf1,pf2=vertexToPosition(thewayFin[0],thewayFin[1])
+        D1=DMAT[pp2][pf1]
+        D2=DMAT[pp2][pf2]
+
+        if D1==INF and D2==INF:
+            return None
+        if D1<D2:
+            t=(pp2,pf1)
+            return t
+        else:
+            t=(pp2,pf2)
+            return t
+
+    if In2dir==False and Fin2dir==False: #caso 4 ambas una soloa mano
+        pp2,pf1=vertexToPosition(thewayIn[1],thewayFin[0])
+        D1=DMAT[pp2][pf1]
+        
+        if D1==INF:
+            return None
+        else:
+            t=(pp2,pf1)
+            return t
+
+
