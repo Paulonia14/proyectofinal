@@ -7,12 +7,16 @@ def create_map(file):
     #Function to open the map and store the content in it
     with open(file,"r") as Map: #name the file and close 
         #check if the txt is readble
+        print("a")
         if Map.readable() is False:
             return "map not readable"
         
         #vertexs
         aux=(Map.readlines(1))
         aux=aux[0][2:]#cut the string
+        aux=aux.replace("{","[")
+        aux=aux.replace("}","]")
+        aux=aux.replace("e","")
         verts=eval(aux)#convert string to list
 
         #edges
@@ -20,6 +24,10 @@ def create_map(file):
         aux=aux[0][2:]#cut the string and replace the <>
         aux=aux.replace('>',')')
         aux=aux.replace('<','(')
+        aux=aux.replace("{","[")
+        aux=aux.replace("}","]")
+        aux=aux.replace("e","")
+
         edges=eval(aux)#convert string to list
 
     #create the map
@@ -34,6 +42,7 @@ try:
     if Largs[1]=="-create_map": #create the map using matrix representation
         #store path
         file=" ".join(Largs[2:])
+        print (file)
         Map=create_map(file)
         #Serialize the map matrix and store it in a file using pickle
         with open("serialized_matrix.pickle","wb") as Matfile:
@@ -282,8 +291,8 @@ try:
                 carsHash=pk.load(carsFile)
         except:
             print("not load before something")
-
-        #bloque para calcular las distancias a los autos
+        ########################################################
+        #Calculate distances from every car to the person
         #print(personDirection)
         directionsList=[]
         for car in carsHash:
@@ -312,31 +321,35 @@ try:
             print("Try it again sometime! Have a nice day :D")
         else:
             ########################################################
-            #calculo del camino mas corto hacia la direccion e imprimirlo
+            #calculate the shortest path to the finalDirection and print it
             #print(people)
             #print(F_elements)
             pathTup=Short_FinalDestination_Path(DistancesMAT,finalDirection,personDirection,mapMatrix)
-            if pathTup==0: #mismo lugar 
-                print("THE SAME PLACE!!!")
+            if pathTup==0: #same placement
+                print("You and the direction are in the same place")
                 raise 
-            if pathTup==None: #imposible ir al destino
-                print("IMPOSIBLE TO REACH DESTINATION")
+            if pathTup==None: #imposible to go
+                print("It is imposible to reach destination")
                 raise 
 
-            try:
-                with open("serialized_PATHS.pickle","rb") as Pfile:
-                    RouteM=pk.load(Pfile)
-            except:
-                print("not load before something")
+            if len(pathTup)==3:
+                print("The shortest path to the adress you provided is --->>>")
+                print(pathTup)
+            else:
+                try:
+                    with open("serialized_PATHS.pickle","rb") as Pfile:
+                        RouteM=pk.load(Pfile)
+                except:
+                    print("paths not loaded")
 
-            Path_to_destination=Rebuild_Path(RouteM ,pathTup[0] ,pathTup[1])
-            print("The shortest path to the adress you provided is --->>>")
-            print(Path_to_destination)
+                Path_to_destination=Rebuild_Path(RouteM ,pathTup[0] ,pathTup[1])
+                print("The shortest path to the adress you provided is --->>>")
+                print(Path_to_destination)
 
             ########################################################
+            #  ---- Interactive Panel ----
             print("These are the cars that can take you to the adress you provided with their respective prices:")
             print(top3)
-            #Interactive Panel
             flag=False
             while flag==False:
                 print("Do you accept the trip? (YES/NO)")
