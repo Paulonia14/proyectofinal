@@ -328,163 +328,22 @@ def thisIsTheWay(mapMatrix,tup):
     return Tdir,theway
 
 
-def Short_FinalDestination_Path(DMAT,addressC,personDirection,mapMatrix):
-    #Calculate the shortest distance for a car (car->person)
-    
-    """They are in the same edge/street -->>"""
-
-    tuplecar=(addressC[0],addressC[2]) #take values that are useful for verification
-    tupleperson=(personDirection[0],personDirection[2])
-
-
-    if (tuplecar[0] in tupleperson) and (tuplecar[1] in tupleperson) : #Evaluate if they are also in the person direction
-        #Same edge/street
-        #Note: We are more interested if the street is in a specific direction because if it is a double handed street 
-        # the ubication of the person and the car won't make much trouble
-
-        #Determine the direction of said edge/street ->
-        car2dir,theway=thisIsTheWay(mapMatrix,tuplecar)
-
-        initialvertex=theway[0] #Some references for evaluating middle positions 
-
-        for i in range(0,len(personDirection)):
-            if i==0 or i==2:
-                if initialvertex==personDirection[i]:
-                    distPers_to_Ivertx=personDirection[i+1]
-                if initialvertex==addressC[i]:
-                    distCar_to_Ivertx=addressC[i+1]
-
-
-        if car2dir==True: #calle dos manos #!!!!!!!!!!!!!!!! #Double hand street
-            #Calculate the trimming of the sides
-            separateDist=distPers_to_Ivertx-distCar_to_Ivertx
-            return abs(separateDist)
-
-        if distPers_to_Ivertx < distCar_to_Ivertx: #The car CAN'T go to the person in the same edge (has to go through other streets)
-            pos1,pos2=vertexToPosition(theway[0],theway[1])
-            Distfinal=DMAT[pos2][pos1]
-            if Distfinal==INF: #imposible to reach person
-                return None
-            #Calculate the "parts" of the street
-            separateDist=distCar_to_Ivertx-distPers_to_Ivertx
-            Distfinal=Distfinal+((mapMatrix[pos1+1][pos2+1])-separateDist)
-            return Distfinal
-        else:
-            pos1,pos2=vertexToPosition(theway[0],theway[1]) #Car CAN go to the person in the same edge (can go directly in that street)
-
-            #Calculate the "parts" of the street
-            if distPers_to_Ivertx==distCar_to_Ivertx: #Car in the same position as the person
-                return 0
-            else:
-                separateDist=distPers_to_Ivertx-distCar_to_Ivertx
-                return separateDist
-
-
-    """They are NOT in the same edge/street -->>""" 
-
-    car2dir,thewayC=thisIsTheWay(mapMatrix,tuplecar)
-    per2dir,thewayP=thisIsTheWay(mapMatrix,tupleperson)
-    
-
-    if per2dir==True and car2dir==True: #First Case: The two are double handed streets
-        Ld=[]
-        for i in range(0,len(addressC)):
-            if i==0 or i==2:
-                aux=addressC[i+1]
-                for j in range(0,len(personDirection)):
-                    result=0
-                    if j==0 or j==2:
-                        pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
-                        D=DMAT[pos1][pos2]
-                        if D == INF:
-                            Ld.append(INF)
-                        else:
-                            result=aux+D+personDirection[j+1]
-                            Ld.append(result)
-        Ld.sort()
-        if Ld[0]==INF: #No posible path because infinite is the smallest
-            return None
-        else:
-            return Ld[0]
-
-    if per2dir==True and car2dir==False: #Second Case: Only person's street is double handed
-        Ld=[]
-        for i in range(0,len(addressC)):
-            if (i==0 or i==2) and thewayC[1]==addressC[i]:
-                aux=addressC[i+1]
-                for j in range(0,len(personDirection)):
-                    result=0
-                    if j==0 or j==2:
-                        pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
-                        D=DMAT[pos1][pos2]
-                        if D == INF:
-                            Ld.append(INF)
-                        else:
-                            result=aux+D+personDirection[j+1]
-                            Ld.append(result)
-        Ld.sort()
-        if Ld[0]==INF: #No posible path because infinite is the smallest
-            return None
-        else:
-            return Ld[0]
-
-    if per2dir==False and car2dir==True: #Third Case: Only car's street is double handed
-        Ld=[]
-        for i in range(0,len(addressC)):
-            if (i==0 or i==2):
-                aux=addressC[i+1]
-                for j in range(0,len(personDirection)):
-                    result=0
-                    if (j==0 or j==2) and thewayP[0]==personDirection[j]:
-                        pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
-                        D=DMAT[pos1][pos2]
-                        if D == INF:
-                            Ld.append(INF)
-                        else:
-                            result=aux+D+personDirection[j+1]
-                            Ld.append(result)
-        Ld.sort()
-        if Ld[0]==INF: #No posible path because infinite is the smallest
-            return None
-        else:
-            return Ld[0]
-
-    if per2dir==False and car2dir==False: #Fourth Case: Both streets are single handed
-        Ld=[]
-        for i in range(0,len(addressC)):
-            if (i==0 or i==2) and thewayC[1]==addressC[i]:
-                aux=addressC[i+1]
-                for j in range(0,len(personDirection)):
-                    result=0
-                    if (j==0 or j==2) and thewayP[0]==personDirection[j]:
-                        pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
-                        D=DMAT[pos1][pos2]
-                        if D == INF:
-                            Ld.append(INF)
-                        else:
-                            result=aux+D+personDirection[j+1]
-                            Ld.append(result)
-        Ld.sort()
-        if Ld[0]==INF: #No posible path because infinite is the smallest
-            return None
-        else:
-            return Ld[0]
-
-
-
-
-"""
-def Short_FinalDestination_Path(DMAT,finalD,InitialD,mapMatrix):
+def Short_FinalDestination_Path(DMAT,InitialD,finalD,mapMatrix):
     #Returns the vertex pair of the shortest distance to the final direction ((InitialVertex, FinalVertex))
     #This is to get later the path from that initial vertex to the final vertex (using Rebuild_Path() function)
 
-    #They are in the same edge/street -->>
-    tupleIn=(InitialD[0],InitialD[2]) #take values that are useful for verification
-    tupleFin=(finalD[0],finalD[2])
-    if (tupleIn[0] in tupleFin) and (tupleIn[1] in tupleFin):
-        per2dir,theway=thisIsTheWay(mapMatrix,tupleIn)
+    """They are in the same edge/street -->>"""
 
-        initialvertex=theway[0] #Some references to evaluate middle positions
+    tupleIN=(InitialD[0],InitialD[2]) #take values that are useful for verification
+    tupleFIN=(finalD[0],finalD[2])
+
+
+    if (tupleIN[0] in tupleFIN) and (tupleIN[1] in tupleFIN) :
+        #Same edge/street
+        #Determine the direction of said edge/street ->
+        IN2dir,theway=thisIsTheWay(mapMatrix,tupleIN)
+
+        initialvertex=theway[0] #Some references for evaluating middle positions 
 
         for i in range(0,len(finalD)):
             if i==0 or i==2:
@@ -493,8 +352,7 @@ def Short_FinalDestination_Path(DMAT,finalD,InitialD,mapMatrix):
                 if initialvertex==InitialD[i]:
                     distPers_to_Ivertx=InitialD[i+1]
 
-
-        if per2dir==True: #Double handed street
+        if IN2dir==True: #Double handed street
             tw1,tw2=vertexToPosition(theway[0],theway[1])
             t=(tw1,tw2)
             return t
@@ -511,101 +369,145 @@ def Short_FinalDestination_Path(DMAT,finalD,InitialD,mapMatrix):
                 t=(tw1,tw2)
                 return t
 
-    #They are NOT in the same edge/street -->>
+    """They are NOT in the same edge/street -->>""" 
 
-    In2dir,thewayIn=thisIsTheWay(mapMatrix,tupleIn)
-    Fin2dir,thewayFin=thisIsTheWay(mapMatrix,tupleFin)
+    IN2dir,thewayIn=thisIsTheWay(mapMatrix,tupleIN)
+    FIN2dir,thewayFin=thisIsTheWay(mapMatrix,tupleFIN)
+    VertsHash={}
+
+    if FIN2dir==True and IN2dir==True: #First Case: Both double handed streets
+        for i in range(0,len(InitialD)):
+            if i==0 or i==2:
+                aux=InitialD[i+1]
+                for j in range(0,len(finalD)):
+                    result=0
+                    if j==0 or j==2:
+                        auxT=(InitialD[i],finalD[j])
+                        pos1,pos2=vertexToPosition(InitialD[i],finalD[j])
+                        D=DMAT[pos1][pos2]
+                        if D == INF:
+                            VertsHash[auxT]=INF
+                        else:
+                            result=aux+D+finalD[j+1]
+                            VertsHash[auxT]=result
+        #sort by value
+        sorted_dict = dict(sorted(VertsHash.items(), key=lambda x: x[1]))
+        first_element = next(iter(sorted_dict.values()))
+        if first_element==INF: #No posible path because infinite is the smallest
+            return None
+        else:
+            LkeysT=list(sorted_dict.keys())
+            VTup=LkeysT[0]
+
+            if VTup[0]==VTup[1]:
+                if thewayIn[0]==VTup[0]:
+                    interm=thewayIn[0]
+                else:
+                    interm=thewayIn[1]
+
+                if thewayIn[0]==interm:
+                    first=thewayIn[1]
+                else:
+                    first=thewayIn[0]
+
+                if thewayFin[0]==interm:
+                    last=thewayFin[1]
+                else:
+                    last=thewayFin[0]
+
+                return [first,interm,last]
+            else:
+                return VTup
+
+    if FIN2dir==False and IN2dir==True: #Second Case: Only the Initial Street is double handed
+        for i in range(0,len(InitialD)):
+            if (i==0 or i==2):
+                aux=InitialD[i+1]
+                for j in range(0,len(finalD)):
+                    result=0
+                    if (j==0 or j==2) and thewayFin[0]==finalD[j]:
+                        auxT=(InitialD[i],finalD[j])
+                        pos1,pos2=vertexToPosition(InitialD[i],finalD[j])
+                        D=DMAT[pos1][pos2]
+                        if D == INF:
+                            VertsHash[auxT]=INF
+                        else:
+                            result=aux+D+finalD[j+1]
+                            VertsHash[auxT]=result
+        #sort by value
+        sorted_dict = dict(sorted(VertsHash.items(), key=lambda x: x[1]))
+        first_element = next(iter(sorted_dict.values()))
+        if first_element==INF: #No posible path because infinite is the smallest
+            return None
+        else:
+            LkeysT=list(sorted_dict.keys())
+            VTup=LkeysT[0]
+
+            if VTup[0]==VTup[1]:
+                if thewayIn[0]==thewayFin[0]:
+                    return [thewayIn[1],thewayFin[0],thewayFin[1]]
+                else:
+                    return [thewayIn[0],thewayFin[0],thewayFin[1]]
+            else:
+                return VTup
     
-
-    if In2dir==True and Fin2dir==True: #First Case: Both double handed streets
-        Ld=[]
-        hashtemp={}
-        pp1,pp2=vertexToPosition(thewayIn[0],thewayIn[1])
-        pf1,pf2=vertexToPosition(thewayFin[0],thewayFin[1])
-        D1=DMAT[pp1][pf1]
-        hashtemp[D1].append((pp1,pf1))
-        D2=DMAT[pp1][pf2]
-        hashtemp[D2].append((pp1,pf2))
-        D3=DMAT[pp2][pf1]
-        hashtemp[D3].append((pp2,pf1))
-        D4=DMAT[pp2][pf2]
-        hashtemp[D4].append((pp2,pf2))
-        Ld=hashtemp.keys()
-        Ld.sort()
-        if Ld[0]==INF: #No posible path because infinite is the smallest
+    if FIN2dir==True and IN2dir==False: #Third Case: Only Final Street is double handed
+        for i in range(0,len(InitialD)):
+            if (i==0 or i==2) and thewayIn[1]==InitialD[i]:
+                aux=InitialD[i+1]
+                for j in range(0,len(finalD)):
+                    result=0
+                    if j==0 or j==2:
+                        auxT=(InitialD[i],finalD[j])
+                        pos1,pos2=vertexToPosition(InitialD[i],finalD[j])
+                        D=DMAT[pos1][pos2]
+                        if D == INF:
+                            VertsHash[auxT]=INF
+                        else:
+                            result=aux+D+finalD[j+1]
+                            VertsHash[auxT]=result
+        #sort by value
+        sorted_dict = dict(sorted(VertsHash.items(), key=lambda x: x[1]))
+        first_element = next(iter(sorted_dict.values()))
+        if first_element==INF: #No posible path because infinite is the smallest
             return None
         else:
-            return hashtemp[Ld[0]]
+            LkeysT=list(sorted_dict.keys())
+            VTup=LkeysT[0]
 
-    if In2dir==True and Fin2dir==False: #Second Case: Only the Initial Street is double handed
-        pp1,pp2=vertexToPosition(thewayIn[0],thewayIn[1])
-        pf1,pf2=vertexToPosition(thewayFin[0],thewayFin[1])
-        if pp1==pf1:
-            D1=consecutiveStreetsDistance(InitialD,finalD,thewayIn[0],thewayFin[0])
-        else:
-            D1=DMAT[pp1][pf1]
-        if pp2==pf1:
-            D2=consecutiveStreetsDistance(InitialD,finalD,thewayIn[1],thewayFin[0])
-        else:
-            D2=DMAT[pp2][pf1]
-    
-        if D1==INF and D2==INF: #No posible path because the two are infinite
+            if VTup[0]==VTup[1]:
+                if thewayIn[1]==thewayFin[0]:
+                    return [thewayIn[0],thewayIn[1],thewayFin[1]]
+                else:
+                    return [thewayIn[0],thewayIn[1],thewayFin[0]]
+            else:
+                return VTup
+
+    if FIN2dir==False and IN2dir==False: #Fourth Case: Both streets are single handed
+        for i in range(0,len(InitialD)):
+            if (i==0 or i==2) and thewayIn[1]==InitialD[i]:
+                aux=InitialD[i+1]
+                for j in range(0,len(finalD)):
+                    result=0
+                    if (j==0 or j==2) and thewayFin[0]==finalD[j]:
+                        auxT=(InitialD[i],finalD[j])
+                        pos1,pos2=vertexToPosition(InitialD[i],finalD[j])
+                        D=DMAT[pos1][pos2]
+                        if D == INF:
+                            VertsHash[auxT]=INF
+                        else:
+                            result=aux+D+finalD[j+1]
+                            VertsHash[auxT]=result
+        #sort by value
+        sorted_dict = dict(sorted(VertsHash.items(), key=lambda x: x[1]))
+        first_element = next(iter(sorted_dict.values()))
+        if first_element==INF: #No posible path because infinite is the smallest
             return None
-        if D1<D2: #Search minor distance and return the vertices
-            t=(pp1,pf1)
-            return t
         else:
-            t=(pp2,pf1)
-            return t
+            LkeysT=list(sorted_dict.keys())
+            VTup=LkeysT[0]
+            if VTup[0]==VTup[1]:
+                return [thewayIn[0],thewayIn[1],thewayFin[1]]
+            else:
+                return VTup
 
-    if In2dir==False and Fin2dir==True: #Third Case: Only Final Street is double handed
-        pp1,pp2=vertexToPosition(thewayIn[0],thewayIn[1])
-        pf1,pf2=vertexToPosition(thewayFin[0],thewayFin[1])
-        if pp2==pf1:
-            D1=consecutiveStreetsDistance(InitialD,finalD,thewayIn[1],thewayFin[0])
-        else:
-            D1=DMAT[pp2][pf1]
-        if pp2==pf2:
-            D2=consecutiveStreetsDistance(InitialD,finalD,thewayIn[1],thewayFin[1])
-        else:
-            D2=DMAT[pp2][pf2]
-        if D1==INF and D2==INF: #No posible path because the two are infinite
-            return None
-        if D1<D2: #Search minor distance and return the vertices
-            t=(pp2,pf1)
-            return t
-        else:
-            t=(pp2,pf2)
-            return t
-
-    if In2dir==False and Fin2dir==False: #Fourth Case: They are both single handed streets
-        printMat(mapMatrix)
-        pp2,pf1=vertexToPosition(thewayIn[1],thewayFin[0])
-        D1=DMAT[pp2][pf1] #There is only one distance posible
-        print(pp2)
-        print(pf1)
-        print(thewayIn)
-        print(thewayFin)
-        print(D1)
-        if D1==INF: #If the distance is infinite, there is no posible path
-            return None
-        elif pp2==pf1: #Consecutive streets
-            return [thewayIn[0],thewayIn[1],thewayFin[1]]
-        else:
-            t=(pp2,pf1)
-            return t
-
-
-def consecutiveStreetsDistance(InitialD,finalD,p1,p2):
-    #Calculate the distance between streets that are consecutive
-    #Calculate the 
-    if InitialD[0]==p1:
-        D=InitialD[1]
-    elif InitialD[2]==p1:
-        D=InitialD[3]
-    if finalD[0]==p2:
-        D+=finalD[1]
-    elif finalD[2]==p2:
-        D+=finalD[3]
-    return D
-"""

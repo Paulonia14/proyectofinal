@@ -324,7 +324,7 @@ try:
             #calculate the shortest path to the finalDirection and print it
             #print(people)
             #print(F_elements)
-            pathTup=Short_FinalDestination_Path(DistancesMAT,finalDirection,personDirection,mapMatrix)
+            pathTup=Short_FinalDestination_Path(DistancesMAT,personDirection,finalDirection,mapMatrix)
             if pathTup==0: #same placement
                 print("You and the direction are in the same place")
                 raise 
