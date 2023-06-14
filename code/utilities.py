@@ -1,3 +1,4 @@
+
 import pickle as pk 
 
 def printMat(mat):
@@ -29,6 +30,7 @@ def convertAdress(adress):
     #Convert direction to a simplified list for better management
     adress=adress.strip("''")
     adress=adress.replace('e','')
+    adress=adress.replace('E','')
     adress=adress.replace('(','')
     adress=adress.replace(')','')
     adress=adress.replace('<','')
@@ -223,11 +225,11 @@ def Short_Car_Path(DMAT,addressC,personDirection,mapMatrix):
     if per2dir==True and car2dir==True: #First Case: The two are double handed streets
         Ld=[]
         for i in range(0,len(addressC)):
-            if i==0 or i==2:
+            if i==0 or i==2: #Only where the vertex are
                 aux=addressC[i+1]
                 for j in range(0,len(personDirection)):
                     result=0
-                    if j==0 or j==2:
+                    if j==0 or j==2: #Only where the vertex are
                         pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
                         D=DMAT[pos1][pos2]
                         if D == INF:
@@ -248,7 +250,7 @@ def Short_Car_Path(DMAT,addressC,personDirection,mapMatrix):
                 aux=addressC[i+1]
                 for j in range(0,len(personDirection)):
                     result=0
-                    if j==0 or j==2:
+                    if j==0 or j==2: #Only where the vertex are
                         pos1,pos2=vertexToPosition(addressC[i],personDirection[j])
                         D=DMAT[pos1][pos2]
                         if D == INF:
@@ -265,7 +267,7 @@ def Short_Car_Path(DMAT,addressC,personDirection,mapMatrix):
     if per2dir==False and car2dir==True: #Third Case: Only car's street is double handed
         Ld=[]
         for i in range(0,len(addressC)):
-            if (i==0 or i==2):
+            if (i==0 or i==2): #Only where the vertex are
                 aux=addressC[i+1]
                 for j in range(0,len(personDirection)):
                     result=0
@@ -353,19 +355,19 @@ def Short_FinalDestination_Path(DMAT,InitialD,finalD,mapMatrix):
                     distPers_to_Ivertx=InitialD[i+1]
 
         if IN2dir==True: #Double handed street
-            tw1,tw2=vertexToPosition(theway[0],theway[1])
+            tw1=theway[0];tw2=theway[1]
             t=(tw1,tw2)
             return t
 
         if distPers_to_Ivertx > distDir_to_Ivertx: #The person CAN'T go to the direction in the same edge (has to go through other streets)
-            tw1,tw2=vertexToPosition(theway[0],theway[1])
+            tw1=theway[0];tw2=theway[1]
             t=(tw2,tw1)
             return t
         else:  #Person CAN go to the direction in the same edge (can go directly in that street)
             if distPers_to_Ivertx==distDir_to_Ivertx:
                 return 0
             else:
-                tw1,tw2=vertexToPosition(theway[0],theway[1])
+                tw1=theway[0];tw2=theway[1]
                 t=(tw1,tw2)
                 return t
 
